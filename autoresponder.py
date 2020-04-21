@@ -48,8 +48,9 @@ words = ['priesthood','covenant','blessing','brethren','sister','stake','ward','
 
 def main():
     global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile
+
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"vhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file","html-file"])
+        opts, args = getopt.getopt(sys.argv[1:],"vhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file=","html-file="])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -81,7 +82,8 @@ def main():
         elif opt == "-v":
             verbose = True
         elif opt == "--txt-file":
-            txtfile = arg
+            print("setting txtFile:" + arg)
+            txtFile = arg
         elif opt == "--html-file":
             htlmFile = arg
         else:
@@ -125,7 +127,8 @@ def main():
         print("SMTP_USER:" + outbox)
         print("SMTP_PASSWORD:" + smtpPassword)
         print("SMTP_PORT:" + smtpPort)
-
+        print("txtFile:" + txtFile)
+        print("htmlFile:" + htmlFile)
 
     Mailbox = poplib.POP3_SSL(popServer, popPort)
     Mailbox.user(inbox) 
@@ -144,8 +147,12 @@ def main():
                 replyTo = msg.get('Reply-to')
                 sender = msg.get('From')
                 if(replyTo):
+                    if(verbose):
+                        print("using replyTo:" + replyTo)
                     sendResponse(replyTo, subject) 
                 elif(sender):
+                    if(verbose):
+                        print("using sender:" + sender)
                     sendResponse(sender, subject)
                 break
 
@@ -239,7 +246,7 @@ def sendResponse(to, subject):
 
 
 def usage():
-    print(sys.argv[0] + " -i <inbox> -o <outbox> -p <pop3server> -s <smtpserver> --pop-port=<port> --smtp-port=<port> --pop-password=<passwprd> --smtp-password=<password>")
+    print(sys.argv[0] + " -i <inbox> -o <outbox> -p <pop3server> -s <smtpserver> --pop-port=<port> --smtp-port=<port> --pop-password=<passwprd> --smtp-password=<password> --txt-file=<optional path to text email> --html-file=<optional path to html email>")
 
 
 if __name__ == "__main__":
