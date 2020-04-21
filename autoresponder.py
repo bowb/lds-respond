@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
-import getpass, poplib, sys, smtplib, ssl, getopt 
+import getpass, poplib, sys, smtplib, ssl, getopt, os.path
+from os import path
 from email.parser import Parser
 from email.header import decode_header
 from email.mime.text import MIMEText
@@ -17,14 +18,16 @@ smtpPassword = ''
 smtpSSL = False
 smtpPort = ''
 verbose = False
+txtFile = './txt'
+htmlFile = './html'
 
 poplib._MAXLINE = 2147483647 
 words = ['priesthood','covenant','blessing','brethren','sister','stake','ward','elder','church','lord','sacrament','ministering','saints','jesus']
 
 def main():
-    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose
+    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"vhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL"])
+        opts, args = getopt.getopt(sys.argv[1:],"vhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file","html-file"])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -55,6 +58,10 @@ def main():
             popSSL = True
         elif opt == "-v":
             verbose = True
+        elif opt == "--txt-file":
+            txtfile = arg
+        elif opt == "--html-file":
+            htlmFile = arg
         else:
             assert False, "unhandled option"
 
@@ -155,7 +162,7 @@ def Get_info(msg):
 
 
 def sendResponse(to, subject):
-    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort
+    global outbox, smtpServer, smtpPassword, smtpSSL, smtpPort, htmlFile, txtFile, verbose
     try:
         sender = outbox 
         context = ssl.create_default_context()
@@ -164,22 +171,41 @@ def sendResponse(to, subject):
         message['Subject'] = subject
         message['From'] = sender
         message['To'] = to
-        txt = """\
-        https://www.lds.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng
 
-        The footnotes gave me a bit of a shock actually. It said that Joseph married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
+        txt = ""
+        if(path.exists(txtFile)):
+            if(verbose):
+                print("using txt file:" + txtFile)
+            f = open(txtFile, "r")
+            txt = f.read()
+            f.close()
+        else:
+            txt = """\
+            https://www.lds.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng
+
+            The footnotes gave me a bit of a shock actually. It said that Joseph married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
             
-        That can't be right can it?
-        """
+            That can't be right can it?
+            """
         txtPart = MIMEText(txt,'plain')
-        html = """\
-        <a href='https://www.lds.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng'>Learn about Helen Mar Kimball</a>
-        <br/>
-        The footnotes gave me a bit of a shock actually. It said that Joseph married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
-        <br />   
-        <br />
-        <b><i>That can't be right can it?</i></b>
-        """
+        
+        html =""
+        if(path.exists(htmlFile)):
+            if(verbose):
+                print("using html file:" + htmlFile)
+            f = open(htmlFile,"r")
+            html = f.read()
+            f.close()
+        else:
+            html = """\
+            <a href='https://www.lds.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng'>Learn about Helen Mar Kimball</a>
+            <br/>
+            The footnotes gave me a bit of a shock actually. It said that Joseph married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
+            <br />   
+            <br />
+            <b><i>That can't be right can it?</i></b>
+            """
+
         htmlPart = MIMEText('<div dir="auto">' + html + '</div>','html')
         message.attach(txtPart)
         message.attach(htmlPart)
