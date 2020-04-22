@@ -32,6 +32,8 @@ Still have an email account that gets "churchy" things sent to it? This will sen
 Uses two different email accounts to auto reply to the Reply-to field sent in emails. Avoids email loops. Only works with gmail ssl for now, using two different gmail accounts. The accounts have to have Less Secure app permissions turned on and no two factor enabled. 
 See https://support.google.com/accounts/answer/6010255?hl=en
 
+Also need to configure Gmail account for pop access. I set mine up to mark emails as read when they are downloaded. I don't care about the Gmail account I am using. If you use this on an account you care about it might mess with your messages getting marked as read.
+
 Change the words in the autoresponder.py file to filter on specified words. TODO: loads words from file.
 
 Use the --txt-file=\<path> --html-file=\<path> to set custom messages.
