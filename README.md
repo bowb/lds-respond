@@ -34,10 +34,10 @@ See https://support.google.com/accounts/answer/6010255?hl=en
 
 Change the words in the autoresponder.py file to filter on specified words. TODO: loads words from file.
 
-Use the --txt-file=<path> --html-file=<path> to set custom messages.
+Use the --txt-file=\<path> --html-file=\<path> to set custom messages.
 
 run in crontab every hour on linux
 
 crontab -e
 
-0 * * * * <path to python3> <path to autoresponder.py> -i <pop email account> -o <smtp email account> --pop-password=<pop password> --smtp-password=<smtp password> --pop-port=995 --smtp-port=465 -p pop.gmail.com -s smtp.gmail.com
+0 * * * * \<path to python3> \<path to autoresponder.py> -i \<pop email account> -o \<smtp email account> --pop-password=\<pop password> --smtp-password=\<smtp password> --pop-port=995 --smtp-port=465 -p pop.gmail.com -s smtp.gmail.com
