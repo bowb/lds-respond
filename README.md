@@ -1,4 +1,4 @@
-# lds-respond
+# Reply to lds tools. (no pun intended)
 autoresponder to things churchy
 
 MIT License
