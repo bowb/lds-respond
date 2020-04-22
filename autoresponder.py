@@ -44,7 +44,7 @@ txtFile = './txt'
 htmlFile = './html'
 
 poplib._MAXLINE = 2147483647 
-words = ['priesthood','covenant','blessing','brethren','sister','stake','ward','elder','church','lord','sacrament','ministering','saints','jesus']
+words = ['endowment','prophet','temple','indexing','priesthood','covenant','blessing','brethren','stake','ward','elder','church','lord','sacrament','ministering','saints','jesus']
 
 def main():
     global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile
