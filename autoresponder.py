@@ -82,7 +82,6 @@ def main():
         elif opt == "-v":
             verbose = True
         elif opt == "--txt-file":
-            print("setting txtFile:" + arg)
             txtFile = arg
         elif opt == "--html-file":
             htlmFile = arg
