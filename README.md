@@ -29,7 +29,7 @@ Still have an email account that gets "churchy" things sent to it? This will sen
 
 # How to
 
-Uses two different email accounts to auto reply to the Reply-to field sent in emails. Avoids email loops. Only works with gmail ssl for now, using two different gmail accounts. The account have to have Less Secure app permissions turned on and no two factor enabled. 
+Uses two different email accounts to auto reply to the Reply-to field sent in emails. Avoids email loops. Only works with gmail ssl for now, using two different gmail accounts. The accounts have to have Less Secure app permissions turned on and no two factor enabled. 
 See https://support.google.com/accounts/answer/6010255?hl=en
 
 Change the words in the autoresponser.py file to filter on specified words. TODO: loads words from file.
