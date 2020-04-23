@@ -209,9 +209,11 @@ def sendResponse(to, subject):
             f.close()
         else:
             txt = """\
-            https://www.lds.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng
+            Have you seen this essay on churchofjesuschrist.org?
 
-            The footnotes gave me a bit of a shock actually. It said that Joseph married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
+            https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng
+
+            The footnotes gave me a bit of a shock actually. It said that Joseph Smith married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
             
             That can't be right can it?
             """
@@ -226,9 +228,13 @@ def sendResponse(to, subject):
             f.close()
         else:
             html = """\
-            <a href='https://www.lds.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng'>Learn about Helen Mar Kimball</a>
+            Have you seen this essay on churchofjesuschrist.org?
+            <br />
+            <br />
+            <a href='https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng'>https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo</a>
             <br/>
-            The footnotes gave me a bit of a shock actually. It said that Joseph married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
+            <br/>
+            The footnotes gave me a bit of a shock actually. It said that Joseph Smith married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
             <br />   
             <br />
             <b><i>That can't be right can it?</i></b>
