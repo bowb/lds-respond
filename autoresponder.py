@@ -129,7 +129,7 @@ def main():
             print(rFile)
         if(rFile):
             txtFile = rFile
-            htmlFile = os.path.splitext(txtFile)[0] + ".htnl"
+            htmlFile = os.path.splitext(txtFile)[0] + ".html"
     
     if(verbose):
         print("POP_USER:" + inbox)
