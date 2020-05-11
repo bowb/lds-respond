@@ -154,7 +154,11 @@ def main():
         for w in words:
             if w in msg_content.lower():
                 msg = Parser().parsestr(msg_content)
-                message = Get_info(msg)
+                message = ""
+                try:
+                    message = Get_info(msg)
+                except:
+                    continue
                 subject = msg.get('Subject')
                 date = msg.get('Date')
                 replyTo = msg.get('Reply-to')
