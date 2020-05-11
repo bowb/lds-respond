@@ -22,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import getpass, poplib, sys, smtplib, ssl, getopt, os.path
+import getpass, poplib, sys, smtplib, ssl, getopt, os.path, os, random, glob
 from os import path
 from email.parser import Parser
 from email.header import decode_header
@@ -42,19 +42,22 @@ smtpPort = ''
 verbose = False
 txtFile = './txt'
 htmlFile = './html'
-
+useRandomFile = False 
 poplib._MAXLINE = 2147483647 
 words = ['bishop','missionary','endowment','prophet','temple','indexing','priesthood','covenant','blessing','brethren','stake','ward','elder','church','lord','sacrament','ministering','saints','jesus']
 
 def main():
-    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile
+    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile, useRandomFile
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"vhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file=","html-file="])
+        opts, args = getopt.getopt(sys.argv[1:],"rvhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file=","html-file=","random"])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
         sys.exit(2)
+
+    print(opts)
+
     for opt, arg in opts:
         if opt == '-h':
             usage()
@@ -75,9 +78,9 @@ def main():
             popPort = arg
         elif opt == "--smtp-port":
             smtpPort = arg
-        elif opt == "smtpSSL":
+        elif opt == "--smtpSSL":
             smtpSSL = True
-        elif opt == "popSSL":
+        elif opt == "--popSSL":
             popSSL = True
         elif opt == "-v":
             verbose = True
@@ -85,6 +88,8 @@ def main():
             txtFile = arg
         elif opt == "--html-file":
             htlmFile = arg
+        elif opt in  ("-r","--random"):
+            useRandomFile = True
         else:
             assert False, "unhandled option"
 
@@ -118,6 +123,14 @@ def main():
         usage()
         sys.exit(2)
 
+    if(useRandomFile):
+        rFile = getFile()
+        if(verbose):
+            print(rFile)
+        if(rFile):
+            txtFile = rFile
+            htmlFile = os.path.splitext(txtFile)[0] + ".htnl"
+    
     if(verbose):
         print("POP_USER:" + inbox)
         print("POP_PASSWORD:" + popPassword)
@@ -128,6 +141,7 @@ def main():
         print("SMTP_PORT:" + smtpPort)
         print("txtFile:" + txtFile)
         print("htmlFile:" + htmlFile)
+        print("useRandomFile:" + str(useRandomFile))
 
     Mailbox = poplib.POP3_SSL(popServer, popPort)
     Mailbox.user(inbox) 
@@ -150,11 +164,11 @@ def main():
                     if(replyTo):
                         if(verbose):
                             print("using replyTo:" + replyTo)
-                        sendResponse(replyTo, subject) 
+                        sendResponse(replyTo, subject, txtFile, htmlFile) 
                     elif(sender):
                         if(verbose):
                             print("using sender:" + sender)
-                        sendResponse(sender, subject)
+                        sendResponse(sender, subject, txtFile, htmlFile)
                     break
 
     Mailbox.quit()
@@ -166,7 +180,7 @@ def check_no_send(sender, replyTo):
             testLine = line.strip().lower()
             if(verbose):
                 print("checking:" + testLine)
-            if((sender and testLine in sender.lower()) or (replyTo and testLine in replyTo.lower())):
+            if((sender and testLine in sender.lower()) or (replyTo and replyTo.lower())):
                 if(verbose):
                     print("not sending response")
                 return True
@@ -203,47 +217,52 @@ def Get_info(msg):
                 content = content.decode(charset)
             return content
 
+def getFile():
+    if(not path.exists('./reply-files')):
+        return None
+    globs = glob.glob('./reply-files/*.txt')
+    rndFile = random.choice(globs)
+    return rndFile
 
-def sendResponse(to, subject):
-    global outbox, smtpServer, smtpPassword, smtpSSL, smtpPort, htmlFile, txtFile, verbose
+def sendResponse(to, subject, txtFile, htmlFile):
+    global outbox, smtpServer, smtpPassword, smtpSSL, smtpPort, verbose
     try:
         sender = outbox 
         context = ssl.create_default_context()
-        
+
         message = MIMEMultipart('alternative')
         message['Subject'] = subject
         message['From'] = sender
         message['To'] = to
 
         txt = ""
+
         if(path.exists(txtFile)):
             if(verbose):
                 print("using txt file:" + txtFile)
-            f = open(txtFile, "r")
-            txt = f.read()
-            f.close()
+            with  open(txtFile, "r") as f:
+                txt = f.read()
         else:
             txt = """\
-            Have you seen this essay on churchofjesuschrist.org?
+                    Have you seen this essay on churchofjesuschrist.org?
 
             https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng
 
             The footnotes gave me a bit of a shock actually. It said that Joseph Smith married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and that he possibly had 2-3 children with them.
-            
+
             That can't be right can it?
             """
         txtPart = MIMEText(txt,'plain')
-        
+
         html =""
         if(path.exists(htmlFile)):
             if(verbose):
                 print("using html file:" + htmlFile)
-            f = open(htmlFile,"r")
-            html = f.read()
-            f.close()
+            with open(htmlFile,"r") as f:
+                html = f.read()
         else:
             html = """\
-            Have you seen this essay on churchofjesuschrist.org?
+                    Have you seen this essay on churchofjesuschrist.org?
             <br />
             <br />
             <a href='https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng'>https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo</a>
@@ -266,7 +285,7 @@ def sendResponse(to, subject):
 
 
 def usage():
-    print(sys.argv[0] + " -i <inbox> -o <outbox> -p <pop3server> -s <smtpserver> --pop-port=<port> --smtp-port=<port> --pop-password=<passwprd> --smtp-password=<password> --txt-file=<optional path to text email> --html-file=<optional path to html email>")
+    print(sys.argv[0] + " -i <inbox> -o <outbox> -p <pop3server> -s <smtpserver> --pop-port=<port> --smtp-port=<port> --pop-password=<passwprd> --smtp-password=<password> --txt-file=<optional path to text email> --html-file=<optional path to html email> --random")
 
 
 if __name__ == "__main__":
