@@ -145,17 +145,32 @@ def main():
                 date = msg.get('Date')
                 replyTo = msg.get('Reply-to')
                 sender = msg.get('From')
-                if(replyTo):
-                    if(verbose):
-                        print("using replyTo:" + replyTo)
-                    sendResponse(replyTo, subject) 
-                elif(sender):
-                    if(verbose):
-                        print("using sender:" + sender)
-                    sendResponse(sender, subject)
-                break
+                noSend = check_no_send(sender, replyTo)
+                if(not noSend):
+                    if(replyTo):
+                        if(verbose):
+                            print("using replyTo:" + replyTo)
+                        sendResponse(replyTo, subject) 
+                    elif(sender):
+                        if(verbose):
+                            print("using sender:" + sender)
+                        sendResponse(sender, subject)
+                    break
 
     Mailbox.quit()
+
+def check_no_send(sender, replyTo):
+    global verbose
+    with  open('nosendlist.txt','r') as fp:
+        for line in fp:
+            testLine = line.strip().lower()
+            if(verbose):
+                print("checking:" + testLine)
+            if((sender and testLine in sender.lower()) or (replyTo and testLine in replyTo.lower())):
+                if(verbose):
+                    print("not sending response")
+                return True
+    return False
 
 def guess_charset(msg):
     charset = msg.get_charset()
@@ -213,7 +228,7 @@ def sendResponse(to, subject):
 
             https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng
 
-            The footnotes gave me a bit of a shock actually. It said that Joseph Smith married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
+            The footnotes gave me a bit of a shock actually. It said that Joseph Smith married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and that he possibly had 2-3 children with them.
             
             That can't be right can it?
             """
@@ -234,7 +249,7 @@ def sendResponse(to, subject):
             <a href='https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo?lang=eng'>https://www.churchofjesuschrist.org/topics/plural-marriage-in-kirtland-and-nauvoo</a>
             <br/>
             <br/>
-            The footnotes gave me a bit of a shock actually. It said that Joseph Smith married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and the he possibly had 2-3 children with them.
+            The footnotes gave me a bit of a shock actually. It said that Joseph Smith married between 30-40 women, 12-14 were already married to other living men, that he was intimate with his wives (one as young as 14) and that he possibly had 2-3 children with them.
             <br />   
             <br />
             <b><i>That can't be right can it?</i></b>
