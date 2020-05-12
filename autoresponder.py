@@ -179,7 +179,7 @@ def main():
 
 def check_no_send(sender, replyTo):
     global verbose
-    with  open('nosendlist.txt','r') as fp:
+    with  open('./nosendlist.txt','r') as fp:
         for line in fp:
             testLine = line.strip().lower()
             if(verbose):
