@@ -37,9 +37,10 @@ Also need to configure Gmail account for pop access. I set mine up to mark email
 Change the words in the autoresponder.py file to filter on specified words. TODO: loads words from file.
 
 Use the --txt-file=\<path> --html-file=\<path> to set custom messages. Can also use -r option to randomly select file out of the reply-file folder
+Use the --no-send-file=\<path> to set emails addresses that will not get a response. One email address per line.
 
 run in crontab every hour on linux
 
 crontab -e
 
-0 * * * * \<path to python3> \<path to autoresponder.py> -i \<pop email account> -o \<smtp email account> --pop-password=\<pop password> --smtp-password=\<smtp password> --pop-port=995 --smtp-port=465 -p pop.gmail.com -s smtp.gmail.com -r
+0 * * * * \<path to python3> \<path to autoresponder.py> -i \<pop email account> -o \<smtp email account> --pop-password=\<pop password> --smtp-password=\<smtp password> --pop-port=995 --smtp-port=465 -p pop.gmail.com -s smtp.gmail.com -r --no-send-file=\<path to file>

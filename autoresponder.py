@@ -43,14 +43,15 @@ verbose = False
 txtFile = './txt'
 htmlFile = './html'
 useRandomFile = False 
+noSendFile = None 
 poplib._MAXLINE = 2147483647 
 words = ['bishop','missionary','endowment','prophet','temple','indexing','priesthood','covenant','blessing','brethren','stake','ward','elder','church','lord','sacrament','ministering','saints','jesus']
 
 def main():
-    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile, useRandomFile
+    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile, useRandomFile, noSendFile
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"rvhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file=","html-file=","random"])
+        opts, args = getopt.getopt(sys.argv[1:],"rvhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file=","html-file=","random","no-send-file="])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -88,6 +89,8 @@ def main():
             txtFile = arg
         elif opt == "--html-file":
             htlmFile = arg
+        elif opt == "--no-send-file":
+            noSendFile = arg
         elif opt in  ("-r","--random"):
             useRandomFile = True
         else:
@@ -163,7 +166,7 @@ def main():
                 date = msg.get('Date')
                 replyTo = msg.get('Reply-to')
                 sender = msg.get('From')
-                noSend = check_no_send(sender, replyTo)
+                noSend = check_no_send(sender, replyTo, noSendFile)
                 if(not noSend):
                     if(replyTo):
                         if(verbose):
@@ -177,17 +180,25 @@ def main():
 
     Mailbox.quit()
 
-def check_no_send(sender, replyTo):
+def check_no_send(sender, replyTo, noSendfile):
     global verbose
-    with  open('./nosendlist.txt','r') as fp:
-        for line in fp:
-            testLine = line.strip().lower()
-            if(verbose):
-                print("checking:" + testLine)
-            if((sender and testLine in sender.lower()) or (replyTo and replyTo.lower())):
+
+    if(not noSendFile):
+        return False
+
+    if(verbose):
+        print("noSendfile:" + noSendfile)
+
+    if(path.exists(noSendfile)):
+        with  open(noSendFile,'r') as fp:
+            for line in fp:
+                testLine = line.strip().lower()
                 if(verbose):
-                    print("not sending response")
-                return True
+                    print("checking:" + testLine)
+                if((sender and testLine in sender.lower()) or (replyTo and replyTo.lower())):
+                    if(verbose):
+                        print("not sending response")
+                    return True
     return False
 
 def guess_charset(msg):
