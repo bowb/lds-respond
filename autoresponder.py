@@ -44,14 +44,15 @@ txtFile = './txt'
 htmlFile = './html'
 useRandomFile = False 
 noSendFile = None 
+workDir = '.'
 poplib._MAXLINE = 2147483647 
-words = ['bishop','missionary','endowment','prophet','temple','indexing','priesthood','covenant','blessing','brethren','stake','ward','elder','church','lord','sacrament','ministering','saints','jesus']
+words = ['bishop','mission','endowment','prophet','temple','indexing','priesthood','covenant','bless','brethren','stake','ward','elder','church','lord','sacrament','minister','saint','jesus','baptism','family history','relief society','president','counselor','young men','young women','trek']
 
 def main():
-    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile, useRandomFile, noSendFile
+    global inbox, outbox, popServer, popPort, popSSL, smtpServer, popPassword, smtpPassword, smtpSSL, smtpPort, verbose, txtFile, htmlFile, useRandomFile, noSendFile, workDir
 
     try:
-        opts, args = getopt.getopt(sys.argv[1:],"rvhi:o:p:s:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file=","html-file=","random","no-send-file="])
+        opts, args = getopt.getopt(sys.argv[1:],"rvhi:o:p:s:w:",["inbox=","outbox=","pop=","smtp=","pop-password=","smtp-password=", "pop-port=","smtp-port=","smtpSSL","popSSL","txt-file=","html-file=","random","no-send-file=","work-dir="])
     except getopt.GetoptError as err:
         print(str(err))
         usage()
@@ -93,6 +94,8 @@ def main():
             noSendFile = arg
         elif opt in  ("-r","--random"):
             useRandomFile = True
+        elif opt in ("-w","--work-dir"):
+            workDir = arg
         else:
             assert False, "unhandled option"
 
@@ -127,7 +130,7 @@ def main():
         sys.exit(2)
 
     if(useRandomFile):
-        rFile = getFile()
+        rFile = getFile(workDir)
         if(verbose):
             print(rFile)
         if(rFile):
@@ -145,6 +148,7 @@ def main():
         print("txtFile:" + txtFile)
         print("htmlFile:" + htmlFile)
         print("useRandomFile:" + str(useRandomFile))
+        print("workdir:" + workDir)
 
     Mailbox = poplib.POP3_SSL(popServer, popPort)
     Mailbox.user(inbox) 
@@ -232,10 +236,16 @@ def Get_info(msg):
                 content = content.decode(charset)
             return content
 
-def getFile():
-    if(not path.exists('./reply-files')):
+def getFile(workDir):
+    global verbose
+
+    if(verbose):
+        print("Get file from workDir:" + workDir + "/reply-files")
+    if(not path.exists(workDir +  '/reply-files')):
+        if(verbose):
+            print("workdir does not exist!.")
         return None
-    globs = glob.glob('./reply-files/*.txt')
+    globs = glob.glob(workDir + '/reply-files/*.txt')
     rndFile = random.choice(globs)
     return rndFile
 
