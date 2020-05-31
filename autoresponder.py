@@ -171,6 +171,8 @@ def main():
                 replyTo = msg.get('Reply-to')
                 sender = msg.get('From')
                 noSend = check_no_send(sender, replyTo, noSendFile)
+                if(verbose):
+                    print("nosend:" + str(noSend))
                 if(not noSend):
                     if(replyTo):
                         if(verbose):
@@ -198,8 +200,8 @@ def check_no_send(sender, replyTo, noSendfile):
             for line in fp:
                 testLine = line.strip().lower()
                 if(verbose):
-                    print("checking:" + testLine)
-                if((sender and testLine in sender.lower()) or (replyTo and replyTo.lower())):
+                    print("checking:" + testLine + " against sender:" + str(sender) + " replyto:" + str(replyTo))
+                if((testLine in sender.lower()) or (testLine in replyTo.lower())):
                     if(verbose):
                         print("not sending response")
                     return True
