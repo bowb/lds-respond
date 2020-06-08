@@ -201,7 +201,7 @@ def check_no_send(sender, replyTo, noSendfile):
                 testLine = line.strip().lower()
                 if(verbose):
                     print("checking:" + testLine + " against sender:" + str(sender) + " replyto:" + str(replyTo))
-                if((testLine in sender.lower()) or (testLine in replyTo.lower())):
+                if(((sender is not None) and (testLine in sender.lower())) or ((replyTo is not None) and (testLine in replyTo.lower()))):
                     if(verbose):
                         print("not sending response")
                     return True
